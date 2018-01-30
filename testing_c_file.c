@@ -1,5 +1,6 @@
 
 int main(int argc, char *args[]){
-	i=j=k+p;
+	for(int i=0; i<j;++i){}
+	
 	return 0;
 }

@@ -221,25 +221,28 @@ def handleIfElse(nodeObj):
 
 
 def handleForLoops(forLoopObj):
-	
+	dfs(forLoopObj.children()[0][1])
 	ind = 0
 	## init - optional
 	if forLoopObj.children()[ind][0] == 'init':	
-
-		# DeclList (can have assignment stmts)
-		if type(forLoopObj.children()[0][1]) is DeclList:
-			for declObj in forLoopObj.children()[0][1]:
-				handleDeclerations(declObj)
 		
-		# ExprList (can have assignment stmts)
-		elif type(forLoopObj.children()[0][1]) is ExprList:
-			for exp in forLoopObj.children()[0][1]:
-				# if type(exp[1]) is Assignment:			
-				handleAssignmentOp(exp)
+		# DeclList (can have assignment stmts)
+		# int i=0,j=k;
+		# if type(forLoopObj.children()[0][1]) is DeclList:
+		# 	for declObj in forLoopObj.children()[0][1]:
+		# 		handleDeclerations(declObj)
+		
+		# # ExprList (can have assignment stmts)
+		# # i=0, j=k;
+		# elif type(forLoopObj.children()[0][1]) is ExprList:
+		# 	for exp in forLoopObj.children()[0][1]:
+		# 		# if type(exp[1]) is Assignment:			
+		# 		handleAssignmentOp(exp)
 
-		# Assignment
-		elif type(forLoopObj.children()[0][1]) is Assignment:
-			handleAssignmentOp(forLoopObj.children()[0][1])
+		# # Assignment
+		# # i = j;
+		# elif type(forLoopObj.children()[0][1]) is Assignment:
+		# 	handleAssignmentOp(forLoopObj.children()[0][1])
 
 		ind += 1
 
@@ -282,10 +285,17 @@ def getIDsFromInitList(initListObj):
 def handleDeclerations(declObj):
 	
 	if type(declObj.children()[0][1]) is TypeDecl:
+		
+		# int i;
+		if len(declObj.children()) == 1:
+			print('Invar')
+
+		elif type(declObj.children()[1][1]) is Assignment:
+			handleMultiAssign([declObj.children()[0][1].getName()], declObj.children()[1][1])
 
 		# int i=5;
-		if type(declObj.children()[1][1]) is Constant:
-			return
+		elif type(declObj.children()[1][1]) is Constant:
+			print('assign', declObj.children()[0][1].getName())
 
 		# int i=j;
 		elif type(declObj.children()[1][1]) is ID:
@@ -333,11 +343,10 @@ def dfs(nodeObj):
 		elif type(nodeObj) is For:
 			handleForLoops(nodeObj)
 			
-		elif type(nodeObj) is Decl:
+		elif type(nodeObj) is Decl:			
 			handleDeclerations(nodeObj)
 
 		else:
-
 			# are all other objs iterable ??
 			for child in nodeObj:
 				dfs(child)
