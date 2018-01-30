@@ -1,9 +1,5 @@
-int a;
-int main(){
-	int c;
-	c=10;
-	while(a>9){
-		int d;
-	}
+
+int main(int argc, char *args[]){
+	for(i=j; (i=0) || 1; ++i){}
 	return 0;
-	}
+}

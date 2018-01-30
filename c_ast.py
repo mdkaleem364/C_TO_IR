@@ -222,6 +222,7 @@ class BinaryOp(Node):
         if self.right is not None:
             yield self.right
 
+    
     attr_names = ('op', )
 
 class Break(Node):
@@ -678,6 +679,9 @@ class ID(Node):
         nodelist = []
         return tuple(nodelist)
 
+    def getName(self):
+        return self.name
+
     def __iter__(self):
         return
         yield
@@ -692,7 +696,7 @@ class IdentifierType(Node):
 
     def children(self):
         nodelist = []
-        print self.names ,"this output is comming from c_ast.c line: 695"
+        print(self.names ,"this output is comming from c_ast.IdentifierType.children() function line: 695")
         return tuple(nodelist)
 
     def __iter__(self):
@@ -934,13 +938,16 @@ class TypeDecl(Node):
 
     def children(self):
         nodelist = []
-        print self.declname,self.quals,self.type,"this output is comming from c_ast.c line: 937"
+        print(self.declname,self.quals,self.type,"this output is comming from c_ast.c line: 937")
         if self.type is not None: nodelist.append(("type", self.type))
         return tuple(nodelist)
 
     def __iter__(self):
         if self.type is not None:
             yield self.type
+
+    def getName(self):
+        return self.declname
 
     attr_names = ('declname', 'quals', )
 
