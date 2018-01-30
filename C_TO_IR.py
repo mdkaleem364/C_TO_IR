@@ -221,10 +221,10 @@ def handleIfElse(nodeObj):
 
 
 def handleForLoops(forLoopObj):
-	dfs(forLoopObj.children()[0][1])
 	ind = 0
 	## init - optional
 	if forLoopObj.children()[ind][0] == 'init':	
+		dfs(forLoopObj.children()[0][1])
 		
 		# DeclList (can have assignment stmts)
 		# int i=0,j=k;
@@ -247,19 +247,19 @@ def handleForLoops(forLoopObj):
 		ind += 1
 
 	## cond - optional
-	if forLoopObj.children()[ind][0] == 'cond':		
-		
+	# not handled - ( 1||a=b )
+	if forLoopObj.children()[ind][0] == 'cond':	
+		# dfs(forLoopObj.children()[0][1])
 		# (can have assignment stmts)
 		# handleAssignmentsInBinaryOps()
-
 		ind += 1
-
 
 	## next - optional
 	if forLoopObj.children()[ind][0] == 'next':
+		# (can have assignment stmts)
+		dfs(forLoopObj.children()[0][1])
 
 		ind += 1		
-		# (can have assignment stmts)
 
 	## stmt - Empty/Compound/(Single line)
 	# incomplete
@@ -322,6 +322,16 @@ def handleDeclerations(declObj):
 	pass
 
 
+def handleUnaryOp(UnaryObj):
+	op = UnaryObj.getOperator()
+
+	# ++i, i++, --i, i--;
+	if op in ['++', 'p++', '--', 'p--']:
+		print('assign',UnaryObj.children()[0][1].getName(),UnaryObj.children()[0][1].getName())
+		pass
+	pass
+
+
 ## MAIN FN
 
 def dfs(nodeObj):
@@ -345,6 +355,9 @@ def dfs(nodeObj):
 			
 		elif type(nodeObj) is Decl:			
 			handleDeclerations(nodeObj)
+
+		elif type(nodeObj) is UnaryOp:
+			handleUnaryOp(nodeObj)
 
 		else:
 			# are all other objs iterable ??

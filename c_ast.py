@@ -1005,6 +1005,9 @@ class UnaryOp(Node):
         if self.expr is not None: nodelist.append(("expr", self.expr))
         return tuple(nodelist)
 
+    def getOperator(self):
+        return self.op
+
     def __iter__(self):
         if self.expr is not None:
             yield self.expr
