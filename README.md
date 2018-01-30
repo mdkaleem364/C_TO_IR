@@ -19,6 +19,8 @@
 8. check assignments stmts in binary ops:
 	for(;i<3 && (i=0);)
 
+9. ++i, i++
+
 a = max(i, j); --- rcall max a i j 
 max(i, j); call max i j
 reset(a); --- call reset a 

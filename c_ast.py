@@ -194,6 +194,9 @@ class Assignment(Node):
         if self.rvalue is not None: nodelist.append(("rvalue", self.rvalue))
         return tuple(nodelist)
 
+    def getOperator(self):
+        return self.op
+
     def __iter__(self):
         if self.lvalue is not None:
             yield self.lvalue

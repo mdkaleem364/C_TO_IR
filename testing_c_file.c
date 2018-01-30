@@ -1,5 +1,5 @@
 
 int main(int argc, char *args[]){
-	for(i=j; (i=0) || 1; ++i){}
+	i=j=k+p;
 	return 0;
 }

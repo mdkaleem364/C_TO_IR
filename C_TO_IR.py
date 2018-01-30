@@ -38,24 +38,28 @@ def handleMultiAssign(leftNodes, assignmentObj):
 	leftChild = assignmentObj.children()[0][1]
 	rightChild = assignmentObj.children()[1][1]
 
+	leftNodes.append(leftChild.getName())		
+
 	if type(rightChild) is Assignment:
-		leftNodes.append(leftChild.getName())
 		handleMultiAssign(leftNodes, rightChild)
 
 	elif type(rightChild) is Constant:
 		for id in leftNodes:
 			print('assign',id)
-		print('assign',leftChild.getName())
 
 	elif type(rightChild) is ID:
 		for id in leftNodes:
 			print('assign', id, rightChild.getName())
-		print('assign', leftChild.getName(), rightChild.getName())
 	
-	elif type(rightChild) is BinaryOp:	# a = b*c	
-		leftNodes.append(leftChild.getName())
-		handleBinaryOp(leftNodes, rightChild)
-
+	elif type(rightChild) is BinaryOp:	# a = b*c
+		ids = getIDsFromBinaryOp(rightChild)
+		
+		for id in leftNodes:			
+			print('assign',id, end=' ')
+			for id1 in ids:
+				print(id1, end=' ')
+			print()
+		
 	pass
 
 # handling (l = r) stmts
@@ -64,23 +68,41 @@ def handleAssignmentOp(assignmentObj):
 	leftChild = assignmentObj.children()[0][1]
 	rightChild = assignmentObj.children()[1][1]
 
-	# a=b
+	leftSide = [leftChild.getName()]
+
+	op = assignmentObj.getOperator()
+	if op in ['+=', '-=', '*=', '/=', '>>=', '<<=', '%=', '|=', '&=', '^=']:
+		leftSide += [leftChild.getName()]
+
+	# a=b || a+=b
 	if type(rightChild) is ID:
-		print('assign', leftChild.getName(), rightChild.getName())
-	
-	# a=b=c
+		print('assign', end=' ')
+		for id in leftSide:
+			print(id, end=' ')
+		print(rightChild.getName())
+
+	# a=b=c || a+=b=c ?
 	elif type(rightChild) is Assignment:
 		handleMultiAssign([leftChild.getName()], rightChild)
 	
-	# a = b*c
-	elif type(rightChild) is BinaryOp:	
-		handleBinaryOp([leftChild.getName()], rightChild)
+	# a = b*c || a += b*c
+	elif type(rightChild) is BinaryOp:
+		ids = getIDsFromBinaryOp(rightChild)
+		print('assign', end=' ')
+		for id in leftSide:
+			print(id, end=' ')
+		for id in ids:
+			print(id,end=' ')
+		print()
 
-	# a=10
-	# elif type(rightChild) is Constant:
-	# 	print('assign', leftChild.getName())
-	
+	# a=10 || a += 5
+	elif type(rightChild) is Constant:
+		print('assign', end=' ')
+		for id in leftSide:
+			print(id, end=' ')
+		print()	
 	pass	
+
 
 def handleWhileLoops(nodeObj):
 	
@@ -201,7 +223,6 @@ def handleIfElse(nodeObj):
 def handleForLoops(forLoopObj):
 	
 	ind = 0
-
 	## init - optional
 	if forLoopObj.children()[ind][0] == 'init':	
 
