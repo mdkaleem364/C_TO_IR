@@ -1,9 +1,21 @@
 from c_ast import *
 
 
-def getIdFromUnaryOp(UnaryObj):
-	return UnaryObj.children()[0][1].getName()
+# returns list of distict elements
+def getDistinctIds(idsList):
 
+	s = set()
+	res = []
+	for id in idsList:
+		if id not in s:
+			res.append(id)
+			s.add(id)
+	return res
+
+
+def getIdFromUnaryOp(UnaryObj):
+	return getIdsFromObject(UnaryObj.children()[0][1])
+	
 
 # returns all variable names from the quation binaryOpObj
 def getIDsFromBinaryOp(binaryOpObj):
@@ -18,7 +30,7 @@ def getIDsFromBinaryOp(binaryOpObj):
 		elif type(i) is ArrayRef:
 			ret.extend(getIdsFromObject(i))
 
-	return list(set(ret))
+	return getDistinctIds(ret)
 
 
 def getIDsFromInitList(initListObj):
@@ -26,39 +38,42 @@ def getIDsFromInitList(initListObj):
 	for obj in initListObj.children():
 		ids += getIdsFromObject(obj[1])
 		
-	return list(set(ids))
+	return getDistinctIds(ids)
 
 
 # get list of vars inside any obj
 def getIdsFromObject(obj):
 
+	resultList = []
 	if type(obj) is ID:
-		return [obj.getName()]
+		resultList = [obj.getName()]
 	
 	elif type(obj) is BinaryOp:
-		return list(set(getIDsFromBinaryOp(obj)))
+		resultList = getIDsFromBinaryOp(obj)
 	
 	# elif type(obj) is UnaryOp:
 	# 	return getIdFromUnaryOp(obj)
 	# 	pass
 
 	elif type(obj) is ArrayRef:
-		return list(set( getIdsFromObject(obj.getId())+getIdsFromObject(obj.getSubscript()) ))
+		resultList =  getIdsFromObject(obj.getId())+getIdsFromObject(obj.getSubscript())
 
 	elif type(obj) is ExprList:
 		ids = []
 		for expr in obj:
 			ids += getIdsFromObject(expr)
-		return list(set(ids))
+		resultList = ids
 
 	# constant
 	elif type(obj) is Constant:
-		return []
+		resultList =  []
 
 	else:
 		res = []
 		for i in obj:
 			res += getIdsFromObject(i)
-		return list(set(res))
+		resultList = res
+
+	return getDistinctIds(resultList)
 	pass
 
