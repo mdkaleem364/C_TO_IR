@@ -42,102 +42,114 @@ def handleMultiAssign(leftNodes, assignmentObj):
 	leftChild = assignmentObj.children()[0][1]
 	rightChild = assignmentObj.children()[1][1]
 
-	leftNodes += [getIdsFromObject(leftChild)]
 
-	if type(rightChild) is Assignment:
-		handleMultiAssign(leftNodes, rightChild)
+	if type(leftChild) is ArrayRef:
+		leftNodes += [getIdsFromObject(leftChild)]
+	else:
+		leftNodes += getIdsFromObject(leftChild.getName())
 
-	elif type(rightChild) is Constant:
+	# check for unary ops
+	op = assignmentObj.getOperator()
+	if op in ['+=', '-=', '*=', '/=', '>>=', '<<=', '%=', '|=', '&=', '^=']:
+		if type(leftChild) is ArrayRef:
+			leftNodes[-1] += leftNodes[-1]
+		else:
+			leftNodes.append(leftNodes[-1])
+
+	# a=b || a+=b
+	if type(rightChild) is ID:
 		for id in leftNodes:
-			print('assign',id)
-
-	elif type(rightChild) is ID:
-		for id in leftNodes:
-			print('assign', end=' ')
+			print('assign', end=' ')			
 			handleGenericList(id)
 			handleGenericList(getIdsFromObject(rightChild))
 			print()
-	
-	elif type(rightChild) is BinaryOp:	# a = b*c
-		ids = getIDsFromBinaryOp(rightChild)
 
+	# a = b*c || a += b*c
+	elif type(rightChild) is BinaryOp:	# a = b*c
+		rightNodes = getIDsFromBinaryOp(rightChild)
 		for id in leftNodes:			
 			print('assign', end=' ')
 			handleGenericList(id)
-
-			for id1 in ids:
-				print(id1, end=' ')
+			handleGenericList(rightNodes)			
 			print()
 
+	# a=b=c || a+=b=c ?
+	elif type(rightChild) is Assignment:
+		handleMultiAssign(leftNodes, rightChild)
+
+	# a=10 || a += 5
+	elif type(rightChild) is Constant:
+		for id in leftNodes:
+			print('assign',end=' ')
+			handleGenericList(id)
+	
+	# a = b[i]
 	elif type(rightChild) is ArrayRef:
-		ids = getIDsFromBinaryOp(rightChild)
+		rightNodes = getIDsFromBinaryOp(rightChild)
 		
 		for id in leftNodes:	
 			print('assign', end=' ')
 			handleGenericList(id)
-
-			for id1 in ids:
-				print(id1, end=' ')
+			handleGenericList(rightNodes)
 			print()
-
 	pass
 
 
 # handling (l = r) stmts
-def handleAssignmentOp(assignmentObj):
+# def handleAssignmentOp(assignmentObj):
 
-	leftChild = assignmentObj.children()[0][1]
-	rightChild = assignmentObj.children()[1][1]
-	leftSide = []
+# 	leftChild = assignmentObj.children()[0][1]
+# 	rightChild = assignmentObj.children()[1][1]
+# 	leftSide = []
 
-	if type(leftChild) is ArrayRef:
-		leftSide += [getIdsFromObject(leftChild)]
-	else:
-		leftSide += [leftChild.getName()]
+# 	if type(leftChild) is ArrayRef:
+# 		leftSide += [getIdsFromObject(leftChild)]
+# 	else:
+# 		leftSide += [leftChild.getName()]
 
-	op = assignmentObj.getOperator()
-	if op in ['+=', '-=', '*=', '/=', '>>=', '<<=', '%=', '|=', '&=', '^=']:
-		leftSide += [leftChild.getName()]
+# 	op = assignmentObj.getOperator()
+# 	if op in ['+=', '-=', '*=', '/=', '>>=', '<<=', '%=', '|=', '&=', '^=']:
+# 		leftSide += [getIdsFromObject(leftChild)]
 
-	# a=b || a+=b
-	if type(rightChild) is ID:
-		print('assign', end=' ')
-		for id in leftSide:
-			print(id, end=' ')
-		print(rightChild.getName())
+# 	# a=b || a+=b
+# 	if type(rightChild) is ID:
+# 		print('assign', end=' ')
+# 		for id in leftSide:
+# 			print(id, end=' ')
+# 		print(rightChild.getName())
 
-	# a=b=c || a+=b=c ?
-	elif type(rightChild) is Assignment:	
-		handleMultiAssign(leftSide, rightChild)
+# 	# a=b=c || a+=b=c ?
+# 	elif type(rightChild) is Assignment:	
+# 		handleMultiAssign(leftSide, rightChild)
 	
-	# a = b*c || a += b*c
-	elif type(rightChild) is BinaryOp:
-		ids = getIdsFromObject(rightChild)
-		print('assign', end=' ')
-		for id in leftSide:
-			print(id, end=' ')
-		for id in ids:
-			print(id,end=' ')
-		print()
+# 	# a = b*c || a += b*c
+# 	elif type(rightChild) is BinaryOp:
+# 		ids = getIdsFromObject(rightChild)
+# 		print('assign', end=' ')
+# 		for id in leftSide:
+# 			print(id, end=' ')
+# 		for id in ids:
+# 			print(id,end=' ')
+# 		print()
 
-	# a=10 || a += 5
-	elif type(rightChild) is Constant:
-		print('assign', end=' ')
-		for id in leftSide:
-			print(id, end=' ')
-		print()	
-		pass
+# 	# a=10 || a += 5
+# 	elif type(rightChild) is Constant:
+# 		print('assign', end=' ')
+# 		for id in leftSide:
+# 			print(id, end=' ')
+# 		print()	
+# 		pass
 
-	# a = b[i]
-	elif type(rightChild) is ArrayRef:
-		print('assign', end=' ')
-		for id in leftSide:
-			print(id, end=' ')
-		for id in getIdsFromObject(rightChild):
-			print(id, end=' ')
-		print()
+# 	# a = b[i]
+# 	elif type(rightChild) is ArrayRef:
+# 		print('assign', end=' ')
+# 		for id in leftSide:
+# 			print(id, end=' ')
+# 		for id in getIdsFromObject(rightChild):
+# 			print(id, end=' ')
+# 		print()
 
-		pass
+# 		pass
 
 
 def handleWhileLoops(nodeObj):

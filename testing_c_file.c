@@ -1,6 +1,6 @@
 
 int main()	{
-	a[i++]++;
-	b[i][j][k] = c = d;
+	a[b[c[b[i]]]] += t;
+	
 	return 0;
 }

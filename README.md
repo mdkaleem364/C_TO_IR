@@ -25,7 +25,6 @@
 
 // done 5. arrays - ‘a[i] = j’ => assign a i j
 
-
 10. for loop initialization lines count if for loop is inside a function
 
 11. a[++i] = j;
@@ -33,6 +32,10 @@
 		assign a i j
 
 12. merge assign and multiassign fns
+
+13. structure
+
+14. sed - remove multiple occurance of vars not changed in assignment stmts
 
 a = max(i, j); --- rcall max a i j 
 max(i, j); call max i j
