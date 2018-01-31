@@ -15,19 +15,13 @@
 6. check assignments stmts in binary ops: (omkar)
 	for(;i<3 && (i=0);)
 
-// done 5. arrays - ‘a[i] = j’ => assign a i j
-
-7. pointers – same as arrays
-
-8. vars depending in for loop
-
-9. stmts in for loop
+7. pointers – same as arrays (omkar - pointer example)
 
 10. for loop cond section contains functions ? (omkar)
 
-11. i = i+i+i => assign i i
+// done 5. arrays - ‘a[i] = j’ => assign a i j
 
-12. loop in loop no of lines
+11. loop in loop no of lines
 
 a = max(i, j); --- rcall max a i j 
 max(i, j); call max i j
