@@ -122,13 +122,19 @@ def handleWhileLoops(nodeObj):
 	for id in ids:
 		print(id, end=' ')
 	
+	followedLines=0
 	# while with braces {}
 	if type(nodeObj.children()[1][1]) is Compound:	
-		print(len(nodeObj.children()[1][1].children()))
+		followedLines += len(nodeObj.children()[1][1].children())
 	
 	# while without braces (only 1 stmt)
 	else:
-		print('1')
+		followedLines += 1
+
+	# check for inner 'For' loop
+	followedLines += getInnerForLoopLines(nodeObj.children()[1][1])
+
+	print(followedLines)
 
 	dfs(nodeObj.children()[1][1])
 	pass
@@ -143,7 +149,6 @@ def handleScanf(scanfObj):
 				print(id, end=' ')
 			print()
 	
-
 	pass
 
 def handlePrintf(printfObj):
@@ -196,6 +201,9 @@ def handleIfElse(nodeObj):
 	# if there is a 'else' or 'else if'
 	followedLines += abs(len(nodeObj.children()) - 2)
 
+	# check for inner 'For' loop
+	followedLines += getInnerForLoopLines(nodeObj.children()[1][1])
+
 	print(followedLines)
 
 	# recur on stmts inside 'if' block
@@ -204,13 +212,14 @@ def handleIfElse(nodeObj):
 	# check if 'else' or 'else if' block exists
 	if len(nodeObj.children()) > 2:
 
-		print('else',end=' ')
+		print('else',end='')
 
 		# check if 'else if' stmt
 		if type(nodeObj.children()[2][1]) is If:
 			handleIfElse(nodeObj.children()[2][1])
 
 		else:
+			print(' ',end='')
 			followedLines = 0
 			# else block with  braces { }
 			if type(nodeObj.children()[2][1]) is Compound:
@@ -223,10 +232,32 @@ def handleIfElse(nodeObj):
 			# if there is a 'else' or 'else if'
 			followedLines += abs(len(nodeObj.children()[2][1].children()) - 2)
 
+			# check for inner 'For' loop
+			followedLines += getInnerForLoopLines(nodeObj.children()[2][1])
+
 			print(followedLines)
 
 			# recur on stmts inside 'else' block
 			dfs(nodeObj.children()[2][1])		
+	pass
+
+
+# return no of lines of initialisation of for loop (if any) inside this obj
+def getInnerForLoopLines(obj):
+
+	res = 0
+	if type(obj) is Compound:
+		for line in obj:
+			if type(line) is For and line.children()[0][0] == 'init':
+				res += getInnerForLoopLines(line)
+
+	elif type(obj) is For and obj.children()[0][0] == 'init':
+		if type(obj.children()[0][1]) is ExprList:
+			res += len(obj.children()[0][1].children())
+		elif type(obj.children()[0][1]) is not Constant:
+			res += 1
+
+	return res
 	pass
 
 
@@ -271,6 +302,9 @@ def handleForLoops(forLoopObj):
 	elif type(forLoopObj.children()[ind][1]) is not EmptyStatement:
 		followedLines += 1;
 
+
+	# check for inner 'For' loop inside stmt block
+	followedLines += getInnerForLoopLines(forLoopObj.children()[ind][1])
 
 	print('loop',end=' ')
 	for id in condIds:
@@ -330,7 +364,12 @@ def handleUnaryOp(UnaryObj):
 
 	# ++i, i++, --i, i--;
 	if op in ['++', 'p++', '--', 'p--']:
-		print('assign', getIdFromUnaryOp(UnaryObj), getIdFromUnaryOp(UnaryObj))
+		print('assign',end=' ')
+		for id in getIdFromUnaryOp(UnaryObj):
+			print(id, end=' ')
+		for id in getIdFromUnaryOp(UnaryObj):
+			print(id, end=' ')
+		print()
 		pass
 	pass
 
@@ -342,7 +381,6 @@ def dfs(nodeObj):
 	if(nodeObj):		
 		if type(nodeObj) is Assignment:
 			handleAssignmentOp(nodeObj)
-			pass
 		
 		elif type(nodeObj) is While or type(nodeObj) is DoWhile:
 			handleWhileLoops(nodeObj)
