@@ -19,11 +19,15 @@
 
 10. for loop cond section contains functions ? (omkar)
 
+11. a[i][i][i] = a[i][i][i] + 1 ? (omkar)
+
 // done 5. arrays - ‘a[i] = j’ => assign a i j
 
 11. loop in loop no of lines
 
 12. for loop inside any loop
+
+13. for loop initialization lines count if for loop is inside a function
 
 a = max(i, j); --- rcall max a i j 
 max(i, j); call max i j
@@ -35,5 +39,5 @@ a[i] = j;
 
 max(a, max(b,c));
 
-$1 = max(b,c) 
+$1 = max(b,c)  
 max(a, $1)
