@@ -172,6 +172,12 @@ class ArrayRef(Node):
         if self.subscript is not None: nodelist.append(("subscript", self.subscript))
         return tuple(nodelist)
 
+    def getId(self):
+        return self.name
+
+    def getSubscript(self):
+        return self.subscript
+
     def __iter__(self):
         if self.name is not None:
             yield self.name

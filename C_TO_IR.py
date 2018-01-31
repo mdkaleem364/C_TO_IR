@@ -15,9 +15,14 @@ def getIDsFromBinaryOp(binaryOpObj):
 	for i in binaryOpObj:
 		if type(i) is ID:
 			ret.append(i.getName())
-		if type(i) is BinaryOp:
+		elif type(i) is UnaryOp:
+			ret.extend(getIdFromUnaryOp(i))
+		elif type(i) is BinaryOp:
 			ret.extend(getIDsFromBinaryOp(i))
-	return ret
+		elif type(i) is ArrayRef:
+			ret.extend(getIdsFromObject(i))
+
+	return list(set(ret))
 	
 # handles 'a=b*d/c*10'
 def handleBinaryOp(leftNode, BinaryOpObj):
@@ -62,13 +67,54 @@ def handleMultiAssign(leftNodes, assignmentObj):
 		
 	pass
 
+
+# get list of vars inside any obj
+def getIdsFromObject(obj):
+
+	if type(obj) is ID:
+		return [obj.getName()]
+	
+	elif type(obj) is BinaryOp:
+		return list(set(getIDsFromBinaryOp(obj)))
+	
+	# elif type(obj) is UnaryOp:
+	# 	return getIdFromUnaryOp(obj)
+	# 	pass
+
+	elif type(obj) is ArrayRef:
+		return list(set( getIdsFromObject(obj.getId())+getIdsFromObject(obj.getSubscript()) ))
+
+	elif type(obj) is ExprList:
+		ids = []
+		for expr in obj:
+			ids += getIdsFromObject(expr)
+		return list(set(ids))
+
+	# constant
+	elif type(obj) is Constant:
+		return []
+
+	else:
+		res = []
+		for i in obj:
+			res += getIdsFromObject(i)
+		return list(set(res))
+	pass
+
+
 # handling (l = r) stmts
 def handleAssignmentOp(assignmentObj):
 
+	# print(assignmentObj.children())
 	leftChild = assignmentObj.children()[0][1]
 	rightChild = assignmentObj.children()[1][1]
+	leftSide = []
 
-	leftSide = [leftChild.getName()]
+
+	if type(leftChild) is ArrayRef:
+		leftSide += getIdsFromObject(leftChild)					
+	else:
+		leftSide += [leftChild.getName()]
 
 	op = assignmentObj.getOperator()
 	if op in ['+=', '-=', '*=', '/=', '>>=', '<<=', '%=', '|=', '&=', '^=']:
@@ -87,7 +133,7 @@ def handleAssignmentOp(assignmentObj):
 	
 	# a = b*c || a += b*c
 	elif type(rightChild) is BinaryOp:
-		ids = getIDsFromBinaryOp(rightChild)
+		ids = getIdsFromObject(rightChild)
 		print('assign', end=' ')
 		for id in leftSide:
 			print(id, end=' ')
@@ -101,7 +147,18 @@ def handleAssignmentOp(assignmentObj):
 		for id in leftSide:
 			print(id, end=' ')
 		print()	
-	pass	
+		pass
+
+	# a = b[i]
+	elif type(rightChild) is ArrayRef:
+		print('assign', end=' ')
+		for id in leftSide:
+			print(id, end=' ')
+		for id in getIdsFromObject(rightChild):
+			print(id, end=' ')
+		print()
+
+		pass
 
 
 def handleWhileLoops(nodeObj):
@@ -127,8 +184,11 @@ def handleScanf(scanfObj):
 	print('input', end=' ')
 	for expr in scanfObj.children()[1][1].children():
 		if type(expr[1]) is UnaryOp:
-			print(expr[1].children()[0][1].getName(), end=' ')
-	print()
+			ids = getIdsFromObject(expr[1])
+			for id in ids:
+				print(id, end=' ')
+			print()
+	
 
 	pass
 
@@ -142,13 +202,9 @@ def handlePrintf(printfObj):
 		print("output", end=' ')
 		for expr in printfObj.children()[1][1].children():
 			
-			if type(expr[1]) is ID:
-				print(expr[1].getName(), end=' ')
-			
-			elif type(expr[1]) is BinaryOp:
-				ids = getIDsFromBinaryOp(expr)
-				for id in ids:
-					print(id,end=' ')
+			ids = getIdsFromObject(expr[1])
+			for id in ids:
+				print(id, end=' ')
 
 		print()
 	pass
@@ -194,7 +250,7 @@ def handleIfElse(nodeObj):
 	# check if 'else' or 'else if' block exists
 	if len(nodeObj.children()) > 2:
 
-		print('else',end='')
+		print('else',end=' ')
 
 		# check if 'else if' stmt
 		if type(nodeObj.children()[2][1]) is If:
@@ -221,48 +277,58 @@ def handleIfElse(nodeObj):
 
 
 def handleForLoops(forLoopObj):
+
 	ind = 0
+	followedLines = 0
 	## init - optional
 	if forLoopObj.children()[ind][0] == 'init':	
 		dfs(forLoopObj.children()[0][1])
-		
-		# DeclList (can have assignment stmts)
-		# int i=0,j=k;
-		# if type(forLoopObj.children()[0][1]) is DeclList:
-		# 	for declObj in forLoopObj.children()[0][1]:
-		# 		handleDeclerations(declObj)
-		
-		# # ExprList (can have assignment stmts)
-		# # i=0, j=k;
-		# elif type(forLoopObj.children()[0][1]) is ExprList:
-		# 	for exp in forLoopObj.children()[0][1]:
-		# 		# if type(exp[1]) is Assignment:			
-		# 		handleAssignmentOp(exp)
-
-		# # Assignment
-		# # i = j;
-		# elif type(forLoopObj.children()[0][1]) is Assignment:
-		# 	handleAssignmentOp(forLoopObj.children()[0][1])
-
 		ind += 1
 
 	## cond - optional
+	condIds = []
 	# not handled - ( 1||a=b )
-	if forLoopObj.children()[ind][0] == 'cond':	
-		# dfs(forLoopObj.children()[0][1])
+	if forLoopObj.children()[ind][0] == 'cond':
 		# (can have assignment stmts)
-		# handleAssignmentsInBinaryOps()
+		if type(forLoopObj.children()[ind][1]) is BinaryOp:
+			condIds = getIDsFromBinaryOp(forLoopObj.children()[ind][1])
+			pass
+
+		elif type(forLoopObj.children()[ind][1]) is ID:
+			condIds = [forLoopObj.children()[ind][1].getName()]
+
 		ind += 1
 
+
 	## next - optional
+	nextInd = -1
 	if forLoopObj.children()[ind][0] == 'next':
 		# (can have assignment stmts)
-		dfs(forLoopObj.children()[0][1])
+		followedLines +=len(forLoopObj.children()[ind][1].children())
 
+		nextInd = ind
 		ind += 1		
 
+	# no of lines in stmt block
+	# for with braces {}
+	if type(forLoopObj.children()[ind][1]) is Compound:
+		followedLines += len(forLoopObj.children()[ind][1].children())
+	# without braces and atleast 1 stmt
+	elif type(forLoopObj.children()[ind][1]) is not EmptyStatement:
+		followedLines += 1;
+
+
+	print('loop',end=' ')
+	for id in condIds:
+		print(id, end=' ')
+	print(followedLines)
+	
 	## stmt - Empty/Compound/(Single line)
+	dfs(forLoopObj.children()[ind][1])
 	# incomplete
+
+	if nextInd != -1:
+		dfs(forLoopObj.children()[nextInd][1])		
 
 	pass
 
@@ -270,22 +336,14 @@ def handleForLoops(forLoopObj):
 def getIDsFromInitList(initListObj):
 	ids = []
 	for obj in initListObj.children():
-
-		# int i={j,k}
-		if type(obj[1]) is ID:
-			ids += [obj[1].getName()]
-
-		# int i={j*2, k}
-		elif type(obj[1]) is BinaryOp:
-			ids += getIDsFromBinaryOp(obj[1])
-
+		ids += getIdsFromObject(obj[1])
+		
 	return ids
 
 
 def handleDeclerations(declObj):
 	
 	if type(declObj.children()[0][1]) is TypeDecl:
-		
 		# int i;
 		if len(declObj.children()) == 1:
 			print('Invar')
@@ -322,12 +380,16 @@ def handleDeclerations(declObj):
 	pass
 
 
+def getIdFromUnaryOp(UnaryObj):
+	return UnaryObj.children()[0][1].getName()
+
+
 def handleUnaryOp(UnaryObj):
 	op = UnaryObj.getOperator()
 
 	# ++i, i++, --i, i--;
 	if op in ['++', 'p++', '--', 'p--']:
-		print('assign',UnaryObj.children()[0][1].getName(),UnaryObj.children()[0][1].getName())
+		print('assign', getIdFromUnaryOp(UnaryObj), getIdFromUnaryOp(UnaryObj))
 		pass
 	pass
 
@@ -353,7 +415,7 @@ def dfs(nodeObj):
 		elif type(nodeObj) is For:
 			handleForLoops(nodeObj)
 			
-		elif type(nodeObj) is Decl:			
+		elif type(nodeObj) is Decl:		
 			handleDeclerations(nodeObj)
 
 		elif type(nodeObj) is UnaryOp:
@@ -364,6 +426,10 @@ def dfs(nodeObj):
 			for child in nodeObj:
 				dfs(child)
 
+
+######################
+## exec starts here
+######################
 
 parser = CParser()
 with open("testing_c_file.c", 'rU') as f:
