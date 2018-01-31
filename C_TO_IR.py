@@ -12,11 +12,11 @@ c_ast.c
 
 	
 # handles 'a=b*d/c*10'
-def handleBinaryOp(leftNode, BinaryOpObj):
+def handleBinaryOp(leftNodes, BinaryOpObj):
 	
 	ids = getIDsFromBinaryOp(BinaryOpObj)
 	
-	for i in leftNode:
+	for i in leftNodes:
 		print('assign', i, end=" ")
 	
 		for id in ids:
@@ -24,13 +24,25 @@ def handleBinaryOp(leftNode, BinaryOpObj):
 		print()
 	pass
 
+
+# handles [b, [a,i], .. ] ids list
+def handleGenericList(l):
+	for i in l:
+		if type(i) is list:
+			for j in i:
+				print(j, end=' ')
+		else:
+			print(i, end=' ')
+	pass
+
+
 # handles 'a=b=c=...'
 def handleMultiAssign(leftNodes, assignmentObj):
 
 	leftChild = assignmentObj.children()[0][1]
 	rightChild = assignmentObj.children()[1][1]
 
-	leftNodes.append(leftChild.getName())		
+	leftNodes += [getIdsFromObject(leftChild)]
 
 	if type(rightChild) is Assignment:
 		handleMultiAssign(leftNodes, rightChild)
@@ -41,32 +53,45 @@ def handleMultiAssign(leftNodes, assignmentObj):
 
 	elif type(rightChild) is ID:
 		for id in leftNodes:
-			print('assign', id, rightChild.getName())
+			print('assign', end=' ')
+			handleGenericList(id)
+			handleGenericList(getIdsFromObject(rightChild))
+			print()
 	
 	elif type(rightChild) is BinaryOp:	# a = b*c
 		ids = getIDsFromBinaryOp(rightChild)
-		
+
 		for id in leftNodes:			
-			print('assign',id, end=' ')
+			print('assign', end=' ')
+			handleGenericList(id)
+
 			for id1 in ids:
 				print(id1, end=' ')
 			print()
-		
-	pass
 
+	elif type(rightChild) is ArrayRef:
+		ids = getIDsFromBinaryOp(rightChild)
+		
+		for id in leftNodes:	
+			print('assign', end=' ')
+			handleGenericList(id)
+
+			for id1 in ids:
+				print(id1, end=' ')
+			print()
+
+	pass
 
 
 # handling (l = r) stmts
 def handleAssignmentOp(assignmentObj):
 
-	# print(assignmentObj.children())
 	leftChild = assignmentObj.children()[0][1]
 	rightChild = assignmentObj.children()[1][1]
 	leftSide = []
 
-
 	if type(leftChild) is ArrayRef:
-		leftSide += getIdsFromObject(leftChild)					
+		leftSide += [getIdsFromObject(leftChild)]
 	else:
 		leftSide += [leftChild.getName()]
 
@@ -82,8 +107,8 @@ def handleAssignmentOp(assignmentObj):
 		print(rightChild.getName())
 
 	# a=b=c || a+=b=c ?
-	elif type(rightChild) is Assignment:
-		handleMultiAssign([leftChild.getName()], rightChild)
+	elif type(rightChild) is Assignment:	
+		handleMultiAssign(leftSide, rightChild)
 	
 	# a = b*c || a += b*c
 	elif type(rightChild) is BinaryOp:
@@ -380,7 +405,8 @@ def dfs(nodeObj):
 
 	if(nodeObj):		
 		if type(nodeObj) is Assignment:
-			handleAssignmentOp(nodeObj)
+			handleMultiAssign([], nodeObj)
+			# handleAssignmentOp(nodeObj)
 		
 		elif type(nodeObj) is While or type(nodeObj) is DoWhile:
 			handleWhileLoops(nodeObj)

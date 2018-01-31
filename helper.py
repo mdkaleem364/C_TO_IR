@@ -1,6 +1,5 @@
 from c_ast import *
 
-
 # returns list of distict elements
 def getDistinctIds(idsList):
 

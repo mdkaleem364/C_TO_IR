@@ -19,18 +19,20 @@
 
 7. pointers – same as arrays (omkar - pointer example)
 
-10. for loop cond section contains functions ? (same as above)
+8. for loop cond section contains functions ? (same as above)
 
-11. a[i][i][i] = a[i][i][i] + 1 ? => assign a i a  (only used are output once... changed are printed times)
+9. a[i][i][i] = a[i][i][i] + 1 ? => assign a i a  (only used are output once... changed are printed times)
 
 // done 5. arrays - ‘a[i] = j’ => assign a i j
 
 
-13. for loop initialization lines count if for loop is inside a function
+10. for loop initialization lines count if for loop is inside a function
 
-14. a[++i] = j;
+11. a[++i] = j;
 		 => assign i i
 		assign a i j
+
+12. merge assign and multiassign fns
 
 a = max(i, j); --- rcall max a i j 
 max(i, j); call max i j
