@@ -23,6 +23,8 @@
 
 11. loop in loop no of lines
 
+12. for loop inside any loop
+
 a = max(i, j); --- rcall max a i j 
 max(i, j); call max i j
 reset(a); --- call reset a 
