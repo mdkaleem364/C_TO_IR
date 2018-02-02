@@ -46,19 +46,16 @@ def handleMultiAssign(leftNodes, assignmentObj):
 	if type(leftChild) is ArrayRef:
 		leftNodes += [getIdsFromObject(leftChild)]
 	else:
-		leftNodes += getIdsFromObject(leftChild.getName())
+		leftNodes += [getIdsFromObject(leftChild)]
 
 	# check for unary ops
 	op = assignmentObj.getOperator()
 	if op in ['+=', '-=', '*=', '/=', '>>=', '<<=', '%=', '|=', '&=', '^=']:
-		if type(leftChild) is ArrayRef:
-			leftNodes[-1] += leftNodes[-1]
-		else:
-			leftNodes.append(leftNodes[-1])
+		leftNodes[-1] += leftNodes[-1]
 
 	# a=b || a+=b
 	if type(rightChild) is ID:
-		for id in leftNodes:
+		for id in leftNodes:		
 			print('assign', end=' ')			
 			handleGenericList(id)
 			handleGenericList(getIdsFromObject(rightChild))
@@ -82,6 +79,7 @@ def handleMultiAssign(leftNodes, assignmentObj):
 		for id in leftNodes:
 			print('assign',end=' ')
 			handleGenericList(id)
+			print()
 	
 	# a = b[i]
 	elif type(rightChild) is ArrayRef:
@@ -171,9 +169,11 @@ def handleWhileLoops(nodeObj):
 	# check for inner 'For' loop
 	followedLines += getInnerForLoopLines(nodeObj.children()[1][1])
 
-	print(followedLines)
+	print()
+	# print(followedLines)
 
 	dfs(nodeObj.children()[1][1])
+	print('endWhile')
 	pass
 
 
@@ -241,7 +241,8 @@ def handleIfElse(nodeObj):
 	# check for inner 'For' loop
 	followedLines += getInnerForLoopLines(nodeObj.children()[1][1])
 
-	print(followedLines)
+	print()
+	# print(followedLines)
 
 	# recur on stmts inside 'if' block
 	dfs(nodeObj.children()[1][1])
@@ -272,10 +273,13 @@ def handleIfElse(nodeObj):
 			# check for inner 'For' loop
 			followedLines += getInnerForLoopLines(nodeObj.children()[2][1])
 
-			print(followedLines)
+			print()
+			# print(followedLines)
 
 			# recur on stmts inside 'else' block
 			dfs(nodeObj.children()[2][1])		
+
+	print('endIf')
 	pass
 
 
@@ -346,7 +350,8 @@ def handleForLoops(forLoopObj):
 	print('loop',end=' ')
 	for id in condIds:
 		print(id, end=' ')
-	print(followedLines)
+	print()
+	# print(followedLines)
 	
 	## stmt - Empty/Compound/(Single line)
 	dfs(forLoopObj.children()[ind][1])
@@ -355,6 +360,7 @@ def handleForLoops(forLoopObj):
 	if nextInd != -1:
 		dfs(forLoopObj.children()[nextInd][1])		
 
+	print('endFor')
 	pass
 
 
@@ -455,3 +461,4 @@ syntaxTree=parser.parse(text, "testing_c_file.c")
 
 
 dfs(syntaxTree)
+

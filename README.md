@@ -4,6 +4,8 @@
 
 1. ternary ops (omkar)
 
+2. sentinal for fn calls - kaleem "not required" bol raha hai
+
 2. functions call in printf() - ‘$i’ -  $1 fine - parse output twice using sentinal
 
 4. no cond var in for loop ? - direct no of lines
