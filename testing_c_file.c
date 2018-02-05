@@ -1,21 +1,43 @@
 
  
 int main()	{
+	for (int i = 0; i < count; ++i)
+	{
 	
-	while(1) {
-		
-		for(j=0; j<9; ++j){
-			for(c=0; c<5; ++c)
-				line2 += 9;			
-		}
-
-		for(c=0; c<5; ++c)
-			line2 += 9;
-
-
-		
+	if (i<10)
+	{
+		if (i<10)
+		{
+			if (i<10)
+				{
+					printf("%s\n",r );
+					for (int i = 0; i < count; ++i)
+							{
+							
+							if (i<10)
+							{
+								if (i<10)
+								{
+									if (i<10)
+										{
+											printf("%s\n",r );
+										}else{
+											printf("%s\n",p );
+										}	
+								}	
+							}
+							}
+				}else{
+					printf("%s\n",p );
+					printf("%s\n",p );
+				}	
+		}	
 	}
- 
+	}
+
+
+
+		
 
 	return 0;
 }

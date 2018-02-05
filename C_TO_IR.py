@@ -246,7 +246,7 @@ def handleIfElse(nodeObj):
 
 	# recur on stmts inside 'if' block
 	dfs(nodeObj.children()[1][1])
-	
+	print('endIf')
 	# check if 'else' or 'else if' block exists
 	if len(nodeObj.children()) > 2:
 
@@ -278,8 +278,7 @@ def handleIfElse(nodeObj):
 
 			# recur on stmts inside 'else' block
 			dfs(nodeObj.children()[2][1])		
-
-	print('endIf')
+			print('endElse')
 	pass
 
 
