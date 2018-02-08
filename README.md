@@ -2,15 +2,13 @@
 
 // TODO
 
+0. handle array decls.
+
 1. ternary ops (omkar)
 
 2. sentinal for fn calls - kaleem "not required" bol raha hai
 
-2. functions call in printf() - ‘$i’ -  $1 fine - parse output twice using sentinal
-
-4. no cond var in for loop ? - direct no of lines
-
-5. multiple invars - cannot be done - two versions of code
+3. functions call in printf() - ‘$i’ -  $1 fine - parse output twice using sentinal
 
 6. check assignments stmts in binary ops:
 	for(   ;k<3 && (i=j);)
@@ -39,6 +37,10 @@
 
 14. sed - remove multiple occurance of vars not changed in assignment stmts
 
+15. int a[3];
+
+16. int i = { somefunction(a, b) };
+
 a = max(i, j); --- rcall max a i j 
 max(i, j); call max i j
 reset(a); --- call reset a 
@@ -61,3 +63,11 @@ main :
 	b array
 	c struct
 ...
+
+
+DONE 
+=====
+
+no cond var in for loop ? - direct no of lines
+
+multiple invars - two versions of code

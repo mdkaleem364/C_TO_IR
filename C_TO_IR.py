@@ -368,7 +368,7 @@ def handleDeclerations(declObj):
 	if type(declObj.children()[0][1]) is TypeDecl:
 		# int i;
 		if len(declObj.children()) == 1:
-			print('Invar')
+			print('invar')
 
 		elif type(declObj.children()[1][1]) is Assignment:
 			handleMultiAssign([declObj.children()[0][1].getName()], declObj.children()[1][1])
@@ -398,6 +398,12 @@ def handleDeclerations(declObj):
 				for id in ids:
 					print(id, end=' ')
 			print()			
+	
+	# int a[n] = {1,2};
+	elif type(declObj.children()[0][1]) is ArrayDecl:
+		print(declObj.children())
+		pass
+
 	pass
 
 
@@ -437,7 +443,7 @@ def dfs(nodeObj):
 		elif type(nodeObj) is For:
 			handleForLoops(nodeObj)
 			
-		elif type(nodeObj) is Decl:		
+		elif type(nodeObj) is Decl:
 			handleDeclerations(nodeObj)
 
 		elif type(nodeObj) is UnaryOp:

@@ -1,0 +1,2 @@
+(('type', <c_ast.TypeDecl object at 0x7f6a584a5f48>), ('dim', <c_ast.Constant object at 0x7f6a5823abd0>))
+(('type', <c_ast.TypeDecl object at 0x7f6a584a5cc8>), ('dim', <c_ast.Constant object at 0x7f6a5823ae10>))
