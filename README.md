@@ -41,6 +41,10 @@
 
 16. int i = { somefunction(a, b) };
 
+
+n. make compatible with input names
+
+
 a = max(i, j); --- rcall max a i j 
 max(i, j); call max i j
 reset(a); --- call reset a 

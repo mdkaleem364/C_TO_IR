@@ -1,9 +1,10 @@
+
+
+
 int main()
 {
-	int a[5];
-	int b[n];
-	int c[2] = {1,2};
+ int a[n];
+ printf("%s\n", 92);
 
-
-	return 0;
+ return 0;
 }

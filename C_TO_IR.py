@@ -93,63 +93,6 @@ def handleMultiAssign(leftNodes, assignmentObj):
 	pass
 
 
-# handling (l = r) stmts
-# def handleAssignmentOp(assignmentObj):
-
-# 	leftChild = assignmentObj.children()[0][1]
-# 	rightChild = assignmentObj.children()[1][1]
-# 	leftSide = []
-
-# 	if type(leftChild) is ArrayRef:
-# 		leftSide += [getIdsFromObject(leftChild)]
-# 	else:
-# 		leftSide += [leftChild.getName()]
-
-# 	op = assignmentObj.getOperator()
-# 	if op in ['+=', '-=', '*=', '/=', '>>=', '<<=', '%=', '|=', '&=', '^=']:
-# 		leftSide += [getIdsFromObject(leftChild)]
-
-# 	# a=b || a+=b
-# 	if type(rightChild) is ID:
-# 		print('assign', end=' ')
-# 		for id in leftSide:
-# 			print(id, end=' ')
-# 		print(rightChild.getName())
-
-# 	# a=b=c || a+=b=c ?
-# 	elif type(rightChild) is Assignment:	
-# 		handleMultiAssign(leftSide, rightChild)
-	
-# 	# a = b*c || a += b*c
-# 	elif type(rightChild) is BinaryOp:
-# 		ids = getIdsFromObject(rightChild)
-# 		print('assign', end=' ')
-# 		for id in leftSide:
-# 			print(id, end=' ')
-# 		for id in ids:
-# 			print(id,end=' ')
-# 		print()
-
-# 	# a=10 || a += 5
-# 	elif type(rightChild) is Constant:
-# 		print('assign', end=' ')
-# 		for id in leftSide:
-# 			print(id, end=' ')
-# 		print()	
-# 		pass
-
-# 	# a = b[i]
-# 	elif type(rightChild) is ArrayRef:
-# 		print('assign', end=' ')
-# 		for id in leftSide:
-# 			print(id, end=' ')
-# 		for id in getIdsFromObject(rightChild):
-# 			print(id, end=' ')
-# 		print()
-
-# 		pass
-
-
 def handleWhileLoops(nodeObj):
 	
 	ids = getIDsFromBinaryOp(nodeObj.children()[0])
@@ -187,6 +130,7 @@ def handleScanf(scanfObj):
 			print()
 	
 	pass
+
 
 def handlePrintf(printfObj):
 
@@ -393,15 +337,15 @@ def handleDeclerations(declObj):
 		# int i={3*k}
 		elif type(declObj.children()[1][1]) is InitList:
 			ids = getIDsFromInitList(declObj.children()[1][1])
+			print('assign', declObj.children()[0][1].getName(), end=' ')								
 			if ids:
-				print('assign', declObj.children()[0][1].getName(), end=' ')				
 				for id in ids:
 					print(id, end=' ')
 			print()			
 	
 	# int a[n] = {1,2};
 	elif type(declObj.children()[0][1]) is ArrayDecl:
-		print(declObj.children())
+		# print(declObj.children())
 		pass
 
 	pass
