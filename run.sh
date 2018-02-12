@@ -6,11 +6,16 @@ sed '/^\#.*include.*/d' ./testing_c_file.c > temp.c
 
 # preprocess input c file
 cpp temp.c > temp1.c
-mv temp1.c testing_c_file.c
+rm temp.c
+mv temp1.c temp.c
+# mv temp1.c testing_c_file.c
 
-python3 C_TO_IR.py > out
+# run main code
+python3 C_TO_IR.py > out # give file as param
+rm temp.c
 python3 removeMultipleInvar.py out > out1
 rm out
 mv out1 out
 
-python3 removeSentinal.py
+# remove sentinals (endIf, endWhile, endFor)
+python3 removeSentinal.py 	# give file as param

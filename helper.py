@@ -1,5 +1,6 @@
 from c_ast import *
 
+
 # returns list of distict elements
 def getDistinctIds(idsList):
 
@@ -9,11 +10,12 @@ def getDistinctIds(idsList):
 		if id not in s:
 			res.append(id)
 			s.add(id)
+
 	return res
 
 
-def getIdFromUnaryOp(UnaryObj):
-	return getIdsFromObject(UnaryObj.children()[0][1])
+def getIdFromUnaryOp(unaryObj):
+	return getIdsFromObject(unaryObj.children()[0][1])
 	
 
 # returns all variable names from the quation binaryOpObj
@@ -67,6 +69,12 @@ def getIdsFromObject(obj):
 	elif type(obj) is Constant:
 		resultList =  []
 
+	elif type(obj) is InitList:
+		result = getIDsFromInitList(obj)
+
+	elif type(obj) is TypeDecl:
+		result = [obj.getName()]
+
 	else:
 		res = []
 		for i in obj:
@@ -74,5 +82,4 @@ def getIdsFromObject(obj):
 		resultList = res
 
 	return getDistinctIds(resultList)
-	pass
 

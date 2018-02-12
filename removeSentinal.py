@@ -1,6 +1,7 @@
 inpFile = []
+inpFileName = 'out'
 
-with open('out','r') as f:
+with open(inpFileName,'r') as f:
 	temp = f.readlines()
 
 	for line in temp:

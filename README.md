@@ -4,6 +4,10 @@
 
 0. handle array decls.
 
+0. 1. if(++i){}
+
+17. elseif(++i) (omkar - where to put assign i i , under which block)
+
 1. ternary ops (omkar)
 
 2. sentinal for fn calls - kaleem "not required" bol raha hai
@@ -37,10 +41,12 @@
 
 14. sed - remove multiple occurance of vars not changed in assignment stmts
 
-15. int a[3];
+15. int a[3], a[i];
 
 16. int i = { somefunction(a, b) };
 
+
+18. include handlePreUnary and PostUnary fns in for, while and assignment fns
 
 n. make compatible with input names
 

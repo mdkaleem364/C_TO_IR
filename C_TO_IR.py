@@ -164,29 +164,15 @@ def handleFunctionCalls(fnCallObj):
 def handleIfElse(nodeObj):
 
 	# print("ID",nodeObj.children()[2][1].children())
-
 	ids = getIDsFromBinaryOp(nodeObj.children()[0])
 	print('if', end=' ')
 	for id in ids:
 		print(id,end=' ')
-	
-	followedLines = 0
-	# if block with braces {}
-	if type(nodeObj.children()[1][1]) is Compound:
-		followedLines += len(nodeObj.children()[1][1].children())
-	
-	# if block without braces
-	else:
-		followedLines += 1
-
-	# if there is a 'else' or 'else if'
-	followedLines += abs(len(nodeObj.children()) - 2)
-
-	# check for inner 'For' loop
-	followedLines += getInnerForLoopLines(nodeObj.children()[1][1])
-
 	print()
-	# print(followedLines)
+	
+	# handle unary ops in if cond
+	handlePreUnary(nodeObj.children()[0][1])
+	handlePostUnary(nodeObj.children()[0][1])
 
 	# recur on stmts inside 'if' block
 	dfs(nodeObj.children()[1][1])
@@ -201,24 +187,7 @@ def handleIfElse(nodeObj):
 			handleIfElse(nodeObj.children()[2][1])
 
 		else:
-			print(' ',end='')
-			followedLines = 0
-			# else block with  braces { }
-			if type(nodeObj.children()[2][1]) is Compound:
-				followedLines += len(nodeObj.children()[2][1].children())
-			
-			# else block without braces
-			else:
-				followedLines += 1
-
-			# if there is a 'else' or 'else if'
-			followedLines += abs(len(nodeObj.children()[2][1].children()) - 2)
-
-			# check for inner 'For' loop
-			followedLines += getInnerForLoopLines(nodeObj.children()[2][1])
-
 			print()
-			# print(followedLines)
 
 			# recur on stmts inside 'else' block
 			dfs(nodeObj.children()[2][1])		
@@ -242,7 +211,6 @@ def getInnerForLoopLines(obj):
 			res += 1
 
 	return res
-	pass
 
 
 def handleForLoops(forLoopObj):
@@ -336,16 +304,39 @@ def handleDeclerations(declObj):
 
 		# int i={3*k}
 		elif type(declObj.children()[1][1]) is InitList:
-			ids = getIDsFromInitList(declObj.children()[1][1])
+			ids = getIDsFromInitList(declObj.children())
 			print('assign', declObj.children()[0][1].getName(), end=' ')								
 			if ids:
 				for id in ids:
 					print(id, end=' ')
 			print()			
 	
-	# int a[n] = {1,2};
+	# int a[n]...;
 	elif type(declObj.children()[0][1]) is ArrayDecl:
-		# print(declObj.children())
+		if len(declObj.children()) == 1:
+			handlePreUnary(declObj.children()[0][1].children()[1][1])
+			print('invar')
+			handlePostUnary(declObj.children()[0][1].children()[1][1])
+		
+		# int a[n] = {i,j,k}
+		elif type(declObj.children()[1][1]) is InitList:
+			
+			ids = getIdsFromObject(declObj.children()[0][1].children()[0][1])
+			print('assign', end=' ')
+			for id in ids:
+				print(id ,end=' ')
+			
+
+			ids = getIdsFromObject(declObj.children()[0][1])
+			for id in ids:
+				print(id ,end=' ')
+			
+			ids = getIdsFromObject(declObj.children()[1][1])
+			for id in ids:
+				print(id ,end=' ')
+			print()
+
+
 		pass
 
 	pass
@@ -363,6 +354,30 @@ def handleUnaryOp(UnaryObj):
 			print(id, end=' ')
 		print()
 		pass
+	pass
+
+
+def handlePreUnary(obj):
+
+	if type(obj) is UnaryOp:
+		op = obj.getOperator()
+		# ++i, --i;
+		if op in ['++', '--']:
+			handleUnaryOp(obj)
+	for child in obj:
+		handlePreUnary(child)
+	pass
+
+
+def handlePostUnary(obj):
+	
+	if type(obj) is UnaryOp:
+		op = obj.getOperator()
+		# i++, i--;
+		if op in ['p++', 'p--']:
+			handleUnaryOp(obj)
+	for child in obj:
+		handlePostUnary(child)
 	pass
 
 
@@ -404,9 +419,9 @@ def dfs(nodeObj):
 ######################
 
 parser = CParser()
-with open("testing_c_file.c", 'rU') as f:
+with open("temp.c", 'rU') as f:
 	text = f.read()
-syntaxTree=parser.parse(text, "testing_c_file.c")
+syntaxTree=parser.parse(text, "temp.c")
 
 
 dfs(syntaxTree)

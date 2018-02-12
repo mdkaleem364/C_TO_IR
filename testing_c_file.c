@@ -1,10 +1,10 @@
-
+#include<stdio.h>
 
 
 int main()
 {
- int a[n];
- printf("%s\n", 92);
+
+	int b[c], a[n++] = {1,2};
 
  return 0;
 }

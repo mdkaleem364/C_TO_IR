@@ -705,7 +705,7 @@ class IdentifierType(Node):
 
     def children(self):
         nodelist = []
-        print(self.names ,"this output is comming from c_ast.IdentifierType.children() function line: 695")
+        # print(self.names ,"this output is comming from c_ast.IdentifierType.children() function line: 708")
         return tuple(nodelist)
 
     def __iter__(self):
