@@ -4,7 +4,7 @@
 int main()
 {
 
-	int b[c], a[n++] = {1,2};
+	int a[n++] = {1,2},b[c]={0,k};
 
  return 0;
 }

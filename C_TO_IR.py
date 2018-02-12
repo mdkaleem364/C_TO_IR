@@ -311,7 +311,7 @@ def handleDeclerations(declObj):
 					print(id, end=' ')
 			print()			
 	
-	# int a[n]...;
+	# int a[n] ...;
 	elif type(declObj.children()[0][1]) is ArrayDecl:
 		if len(declObj.children()) == 1:
 			handlePreUnary(declObj.children()[0][1].children()[1][1])
@@ -321,12 +321,8 @@ def handleDeclerations(declObj):
 		# int a[n] = {i,j,k}
 		elif type(declObj.children()[1][1]) is InitList:
 			
-			ids = getIdsFromObject(declObj.children()[0][1].children()[0][1])
-			print('assign', end=' ')
-			for id in ids:
-				print(id ,end=' ')
-			
-
+			# ids = getIdsFromObject(declObj.children()[0][1].children()[0][1])
+			print('assign', end=' ')			
 			ids = getIdsFromObject(declObj.children()[0][1])
 			for id in ids:
 				print(id ,end=' ')

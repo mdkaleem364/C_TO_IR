@@ -70,10 +70,10 @@ def getIdsFromObject(obj):
 		resultList =  []
 
 	elif type(obj) is InitList:
-		result = getIDsFromInitList(obj)
+		resultList = getIDsFromInitList(obj)
 
-	elif type(obj) is TypeDecl:
-		result = [obj.getName()]
+	elif type(obj) is TypeDecl:		
+		resultList = [obj.getName()]
 
 	else:
 		res = []
