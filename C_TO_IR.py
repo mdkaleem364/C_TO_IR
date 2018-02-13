@@ -2,6 +2,7 @@ import sys
 from c_ast import *
 from c_parser import CParser
 from helper import *
+import helper
 
 """
 for testing print added in 
@@ -69,36 +70,27 @@ def handleMultiAssign(leftNodes, assignmentObj):
 
 
 def handleWhileLoops(nodeObj):
-	
-	ids = getIdsFromObject(nodeObj.children()[0])
+	global dollarCounter
+	currCounter = dollarCounter
+
+	ids = getIdsFromObject(nodeObj.children()[0][1])
 	print('loop', end=' ')
 	for id in ids:
 		print(id, end=' ')
-	
-	followedLines=0
-	# while with braces {}
-	if type(nodeObj.children()[1][1]) is Compound:	
-		followedLines += len(nodeObj.children()[1][1].children())
-	
-	# while without braces (only 1 stmt)
-	else:
-		followedLines += 1
-
-	# check for inner 'For' loop
-	followedLines += getInnerForLoopLines(nodeObj.children()[1][1])
-
 	print()
-	# print(followedLines)
 
 	dfs(nodeObj.children()[1][1])
+	helper.dollarCounter = currCounter
+
+	# again parse on cond stmts
+	getIdsFromObject(nodeObj.children()[0][1])
 	print('endWhile')
 	pass
 
 
 def handleIfElse(nodeObj):
 
-	# print("ID",nodeObj.children()[2][1].children())
-	ids = getIdsFromObject(nodeObj.children()[0])
+	ids = getIdsFromObject(nodeObj.children()[0][1])
 	print('if', end=' ')
 	for id in ids:
 		print(id,end=' ')
@@ -150,7 +142,6 @@ def getInnerForLoopLines(obj):
 def handleForLoops(forLoopObj):
 
 	ind = 0
-	followedLines = 0
 	## init - optional
 	if forLoopObj.children()[ind][0] == 'init':	
 		dfs(forLoopObj.children()[0][1])
@@ -162,6 +153,9 @@ def handleForLoops(forLoopObj):
 	if forLoopObj.children()[ind][0] == 'cond':
 		# (can have assignment stmts)
 		if type(forLoopObj.children()[ind][1]) is BinaryOp:
+			# for fns inside cond stmts, if any
+			currCounter = helper.dollarCounter
+			currInd = ind
 			condIds = getIdsFromObject(forLoopObj.children()[ind][1])
 			pass
 
@@ -170,41 +164,27 @@ def handleForLoops(forLoopObj):
 
 		ind += 1
 
-
 	## next - optional
 	nextInd = -1
-	if forLoopObj.children()[ind][0] == 'next':
-		# (can have assignment stmts)
-		followedLines +=len(forLoopObj.children()[ind][1].children())
-
+	if forLoopObj.children()[ind][0] == 'next':		
 		nextInd = ind
 		ind += 1		
-
-	# no of lines in stmt block
-	# for with braces {}
-	if type(forLoopObj.children()[ind][1]) is Compound:
-		followedLines += len(forLoopObj.children()[ind][1].children())
-	# without braces and atleast 1 stmt
-	elif type(forLoopObj.children()[ind][1]) is not EmptyStatement:
-		followedLines += 1;
-
-
-	# check for inner 'For' loop inside stmt block
-	followedLines += getInnerForLoopLines(forLoopObj.children()[ind][1])
-
+	
 	print('loop',end=' ')
 	for id in condIds:
 		print(id, end=' ')
 	print()
-	# print(followedLines)
 	
 	## stmt - Empty/Compound/(Single line)
-	dfs(forLoopObj.children()[ind][1])
-	# incomplete
+	dfs(forLoopObj.children()[ind][1])	
 
 	if nextInd != -1:
 		dfs(forLoopObj.children()[nextInd][1])		
-
+	
+	# for fns inside cond stmts, if any
+	helper.dollarCounter = currCounter
+	getIdsFromObject(forLoopObj.children()[currInd][1])
+	
 	print('endFor')
 	pass
 
@@ -271,8 +251,6 @@ def handleDeclerations(declObj):
 			for id in ids:
 				print(id ,end=' ')
 			print()
-
-
 		pass
 
 	# handle postUnary

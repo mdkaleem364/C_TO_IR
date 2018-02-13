@@ -11,11 +11,10 @@ TODO
 
 1. while(scanf("%d",&x)){} => output? (omkar)
 
-1. int a=printf("%s\n", c);
+1. int a=printf("%s\n", c); => output? (omkar)
 
 2. sentinal for fn calls - kaleem "not required" bol raha hai
 
-3. functions call in printf() - ‘$i’ -  $1 fine - parse output twice using sentinal
 
 6. check assignments stmts in binary ops:
 	for(   ;k<3 && (i=j);)
@@ -30,7 +29,7 @@ TODO
 
 9. a[i][i][i] = a[i][i][i] + 1 ? => assign a i a  (only used are output once... changed are printed times)
 
-10. for loop initialization lines count if for loop is inside a function
+10. for loop initialization lines count if funciton is inside a for loop
 
 11. a[++i] = j;
 		 => assign i i
@@ -45,7 +44,6 @@ TODO
 15. int a[3], a[i];
 
 16. int i = { somefunction(a, b) };
-
 
 18. include handlePreUnary and PostUnary fns in for, while and assignment fns
 
@@ -78,6 +76,8 @@ main :
 
 DONE 
 =====
+
+functions call in printf() - ‘$i’ -  $1 fine - parse output twice using sentinal
 
 no cond var in for loop ? - direct no of lines
 

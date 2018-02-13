@@ -1,3 +1,7 @@
-rcall max1 a b c 
-rcall max2 a b c 
-call max3 c 
+rcall fn $1 a b 
+loop $1 
+output d 
+output d 
+assign j j 
+rcall fn $1 a b 
+endFor
