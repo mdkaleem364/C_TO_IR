@@ -42,7 +42,6 @@ def handleMultiAssign(leftNodes, assignmentObj):
 	leftChild = assignmentObj.children()[0][1]
 	rightChild = assignmentObj.children()[1][1]
 
-
 	if type(leftChild) is ArrayRef:
 		leftNodes += [getIdsFromObject(leftChild)]
 	else:
@@ -54,20 +53,13 @@ def handleMultiAssign(leftNodes, assignmentObj):
 		leftNodes[-1] += leftNodes[-1]
 
 	# a=b || a+=b
-	if type(rightChild) is ID:
+	# a = b[i]
+	# a = b*c || a += b*c
+	if type(rightChild) in [ID, BinaryOp, ArrayRef]:
 		for id in leftNodes:		
 			print('assign', end=' ')			
 			handleGenericList(id)
 			handleGenericList(getIdsFromObject(rightChild))
-			print()
-
-	# a = b*c || a += b*c
-	elif type(rightChild) is BinaryOp:	# a = b*c
-		rightNodes = getIDsFromBinaryOp(rightChild)
-		for id in leftNodes:			
-			print('assign', end=' ')
-			handleGenericList(id)
-			handleGenericList(rightNodes)			
 			print()
 
 	# a=b=c || a+=b=c ?
@@ -81,15 +73,6 @@ def handleMultiAssign(leftNodes, assignmentObj):
 			handleGenericList(id)
 			print()
 	
-	# a = b[i]
-	elif type(rightChild) is ArrayRef:
-		rightNodes = getIDsFromBinaryOp(rightChild)
-		
-		for id in leftNodes:	
-			print('assign', end=' ')
-			handleGenericList(id)
-			handleGenericList(rightNodes)
-			print()
 	pass
 
 
@@ -117,47 +100,6 @@ def handleWhileLoops(nodeObj):
 
 	dfs(nodeObj.children()[1][1])
 	print('endWhile')
-	pass
-
-
-def handleScanf(scanfObj):
-	print('input', end=' ')
-	for expr in scanfObj.children()[1][1].children():
-		if type(expr[1]) is UnaryOp:
-			ids = getIdsFromObject(expr[1])
-			for id in ids:
-				print(id, end=' ')
-			print()
-	
-	pass
-
-
-def handlePrintf(printfObj):
-
-	# no vars is printed in printf
-	if len(printfObj.children()[1][1].children()) < 2:
-		print("invar")
-
-	else:
-		print("output", end=' ')
-		for expr in printfObj.children()[1][1].children():
-			
-			ids = getIdsFromObject(expr[1])
-			for id in ids:
-				print(id, end=' ')
-
-		print()
-	pass
-
-
-# printf, scanf, anyother fn call
-def handleFunctionCalls(fnCallObj):
-	if fnCallObj.children()[0][1].getName() == 'scanf':
-		handleScanf(fnCallObj)
-
-	elif fnCallObj.children()[0][1].getName() == 'printf':
-		handlePrintf(fnCallObj)
-
 	pass
 
 
@@ -276,6 +218,9 @@ def handleForLoops(forLoopObj):
 
 
 def handleDeclerations(declObj):
+
+	# handle preUnary
+	handlePreUnary(declObj)	
 	
 	if type(declObj.children()[0][1]) is TypeDecl:
 		# int i;
@@ -335,6 +280,8 @@ def handleDeclerations(declObj):
 
 		pass
 
+	# handle postUnary
+	handlePostUnary(declObj)	
 	pass
 
 

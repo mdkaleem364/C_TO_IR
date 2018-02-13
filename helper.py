@@ -1,6 +1,49 @@
 from c_ast import *
 
 
+def handlePrintf(printfObj):
+
+	# no vars is printed in printf
+	if len(printfObj.children()[1][1].children()) < 2:
+		print("invar")
+
+	else:
+		print("output", end=' ')
+		for expr in printfObj.children()[1][1].children():
+			
+			ids = getIdsFromObject(expr[1])
+			for id in ids:
+				print(id, end=' ')
+
+		print()
+	pass
+
+
+def handleScanf(scanfObj):
+	print('input', end=' ')
+	for expr in scanfObj.children()[1][1].children():
+		if type(expr[1]) is UnaryOp:
+			ids = getIdsFromObject(expr[1])
+			for id in ids:
+				print(id, end=' ')
+			print()
+	
+	pass
+
+# printf, scanf, anyother fn call
+def handleFunctionCalls(fnCallObj):
+	if fnCallObj.children()[0][1].getName() == 'scanf':
+		handleScanf(fnCallObj)
+
+	elif fnCallObj.children()[0][1].getName() == 'printf':
+		handlePrintf(fnCallObj)
+
+	else:
+		print('call', end=' ')
+		
+	pass
+
+
 # returns list of distict elements
 def getDistinctIds(idsList):
 
@@ -42,6 +85,8 @@ def getIDsFromInitList(initListObj):
 	return getDistinctIds(ids)
 
 
+dollarCounter = 0	# global var
+
 # get list of vars inside any obj
 def getIdsFromObject(obj):
 
@@ -74,6 +119,9 @@ def getIdsFromObject(obj):
 
 	elif type(obj) is TypeDecl:		
 		resultList = [obj.getName()]
+
+	elif type(obj) is FuncCall:
+		resultList = []
 
 	else:
 		res = []

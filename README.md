@@ -2,9 +2,7 @@
 
 // TODO
 
-0. handle array decls.
-
-0. 1. if(++i){}
+0. 1. if(++i){} (omkar)
 
 17. elseif(++i) (omkar - where to put assign i i , under which block)
 
@@ -26,8 +24,6 @@
 8. for loop cond section contains functions ? (same as above)
 
 9. a[i][i][i] = a[i][i][i] + 1 ? => assign a i a  (only used are output once... changed are printed times)
-
-// done 5. arrays - ‘a[i] = j’ => assign a i j
 
 10. for loop initialization lines count if for loop is inside a function
 
@@ -51,7 +47,7 @@
 n. make compatible with input names
 
 
-a = max(i, j); --- rcall max a i j 
+a = max(i, j); --- rcall max a i j
 max(i, j); call max i j
 reset(a); --- call reset a 
 
@@ -81,3 +77,7 @@ DONE
 no cond var in for loop ? - direct no of lines
 
 multiple invars - two versions of code
+
+handle array decls.
+
+arrays - ‘a[i] = j’ => assign a i j
