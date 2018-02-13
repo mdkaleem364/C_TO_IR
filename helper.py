@@ -1,6 +1,17 @@
 from c_ast import *
 
 
+# handles [b, [a,i], .. ] ids list
+def handleGenericList(l):
+	for i in l:
+		if type(i) is list:
+			for j in i:
+				print(j, end=' ')
+		else:
+			print(i, end=' ')
+	pass
+
+
 def handlePrintf(printfObj):
 
 	# no vars is printed in printf
@@ -31,17 +42,52 @@ def handleScanf(scanfObj):
 	pass
 
 # printf, scanf, anyother fn call
-def handleFunctionCalls(fnCallObj):
+def handleFunctionCalls(leftNodes, fnCallObj, callType):
+	global dollarCounter
+	currCounter=dollarCounter
+	dollarCounter += 1
+
 	if fnCallObj.children()[0][1].getName() == 'scanf':
 		handleScanf(fnCallObj)
 
 	elif fnCallObj.children()[0][1].getName() == 'printf':
 		handlePrintf(fnCallObj)
 
+	# for all other fns
 	else:
-		print('call', end=' ')
+
+		# recurse on fns, if any, inside args
+		if len(fnCallObj.children()) > 1:
+			ids = getIdsFromObject(fnCallObj.children()[1][1])
+
+		print(callType, fnCallObj.children()[0][1].getName(), end=' ')			
 		
-	pass
+		# Eg.. int a=max(a,b); 
+		if len(leftNodes) > 0:
+			# print left assignment val
+			# 'a'
+			if len(leftNodes) > 0:
+				handleGenericList(leftNodes)
+				# for node in leftNodes:
+				# 	print(node, end=' ')
+			else:
+				print('$'+str(currCounter), end=' ')
+
+			# check if fn has args
+			if len(fnCallObj.children()) > 1:
+				for id in ids:
+					print(id, end=' ')
+			print()
+
+		# Eg.. noReturnFn(a,b,c);
+		else:
+			# check if fn has args
+			if len(fnCallObj.children()) > 1:
+				for id in ids:
+					print(id, end=' ')
+			print()			
+		
+	return currCounter
 
 
 # returns list of distict elements
@@ -61,22 +107,6 @@ def getIdFromUnaryOp(unaryObj):
 	return getIdsFromObject(unaryObj.children()[0][1])
 	
 
-# returns all variable names from the quation binaryOpObj
-def getIDsFromBinaryOp(binaryOpObj):
-	ret = []
-	for i in binaryOpObj:
-		if type(i) is ID:
-			ret.append(i.getName())
-		elif type(i) is UnaryOp:
-			ret.extend(getIdFromUnaryOp(i))
-		elif type(i) is BinaryOp:
-			ret.extend(getIDsFromBinaryOp(i))
-		elif type(i) is ArrayRef:
-			ret.extend(getIdsFromObject(i))
-
-	return getDistinctIds(ret)
-
-
 def getIDsFromInitList(initListObj):
 	ids = []
 	for obj in initListObj.children():
@@ -85,7 +115,7 @@ def getIDsFromInitList(initListObj):
 	return getDistinctIds(ids)
 
 
-dollarCounter = 0	# global var
+dollarCounter = 1	# global var
 
 # get list of vars inside any obj
 def getIdsFromObject(obj):
@@ -94,8 +124,8 @@ def getIdsFromObject(obj):
 	if type(obj) is ID:
 		resultList = [obj.getName()]
 	
-	elif type(obj) is BinaryOp:
-		resultList = getIDsFromBinaryOp(obj)
+	# elif type(obj) is BinaryOp:
+	# 	resultList = getIDsFromBinaryOp(obj) 	# deleted fns
 	
 	# elif type(obj) is UnaryOp:
 	# 	return getIdFromUnaryOp(obj)
@@ -121,7 +151,7 @@ def getIdsFromObject(obj):
 		resultList = [obj.getName()]
 
 	elif type(obj) is FuncCall:
-		resultList = []
+		resultList = ['$'+str(handleFunctionCalls(['$'+str(dollarCounter)], obj, 'rcall'))]
 
 	else:
 		res = []

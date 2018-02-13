@@ -8,6 +8,10 @@
 
 1. ternary ops (omkar)
 
+1. while(scanf("%d",&x)){} => output? (omkar)
+
+1. int a=printf("%s\n", c);
+
 2. sentinal for fn calls - kaleem "not required" bol raha hai
 
 3. functions call in printf() - ‘$i’ -  $1 fine - parse output twice using sentinal

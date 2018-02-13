@@ -14,7 +14,7 @@ c_ast.c
 # handles 'a=b*d/c*10'
 def handleBinaryOp(leftNodes, BinaryOpObj):
 	
-	ids = getIDsFromBinaryOp(BinaryOpObj)
+	ids = getIdsFromObject(BinaryOpObj)
 	
 	for i in leftNodes:
 		print('assign', i, end=" ")
@@ -22,17 +22,6 @@ def handleBinaryOp(leftNodes, BinaryOpObj):
 		for id in ids:
 			print(id, end=" ")
 		print()
-	pass
-
-
-# handles [b, [a,i], .. ] ids list
-def handleGenericList(l):
-	for i in l:
-		if type(i) is list:
-			for j in i:
-				print(j, end=' ')
-		else:
-			print(i, end=' ')
 	pass
 
 
@@ -73,12 +62,15 @@ def handleMultiAssign(leftNodes, assignmentObj):
 			handleGenericList(id)
 			print()
 	
+	elif type(rightChild) is FuncCall:
+		handleFunctionCalls(leftNodes, rightChild, 'rcall')
+
 	pass
 
 
 def handleWhileLoops(nodeObj):
 	
-	ids = getIDsFromBinaryOp(nodeObj.children()[0])
+	ids = getIdsFromObject(nodeObj.children()[0])
 	print('loop', end=' ')
 	for id in ids:
 		print(id, end=' ')
@@ -106,7 +98,7 @@ def handleWhileLoops(nodeObj):
 def handleIfElse(nodeObj):
 
 	# print("ID",nodeObj.children()[2][1].children())
-	ids = getIDsFromBinaryOp(nodeObj.children()[0])
+	ids = getIdsFromObject(nodeObj.children()[0])
 	print('if', end=' ')
 	for id in ids:
 		print(id,end=' ')
@@ -170,7 +162,7 @@ def handleForLoops(forLoopObj):
 	if forLoopObj.children()[ind][0] == 'cond':
 		# (can have assignment stmts)
 		if type(forLoopObj.children()[ind][1]) is BinaryOp:
-			condIds = getIDsFromBinaryOp(forLoopObj.children()[ind][1])
+			condIds = getIdsFromObject(forLoopObj.children()[ind][1])
 			pass
 
 		elif type(forLoopObj.children()[ind][1]) is ID:
@@ -221,8 +213,8 @@ def handleDeclerations(declObj):
 
 	# handle preUnary
 	handlePreUnary(declObj)	
-	
 	if type(declObj.children()[0][1]) is TypeDecl:
+
 		# int i;
 		if len(declObj.children()) == 1:
 			print('invar')
@@ -240,7 +232,7 @@ def handleDeclerations(declObj):
 
 		# int i=(2*i*k);
 		elif type(declObj.children()[1][1]) is BinaryOp:
-			ids = getIDsFromBinaryOp(declObj.children()[1][1])						
+			ids = getIdsFromObject(declObj.children()[1][1])						
 			if ids:
 				print('assign', declObj.children()[0][1].getName(), end=' ')				
 				for id in ids:
@@ -255,7 +247,10 @@ def handleDeclerations(declObj):
 				for id in ids:
 					print(id, end=' ')
 			print()			
-	
+
+		elif type(declObj.children()[1][1]) is FuncCall:
+			handleFunctionCalls(getIdsFromObject(declObj.children()[0][1]), declObj.children()[1][1], 'rcall')
+		
 	# int a[n] ...;
 	elif type(declObj.children()[0][1]) is ArrayDecl:
 		if len(declObj.children()) == 1:
@@ -337,7 +332,7 @@ def dfs(nodeObj):
 			handleWhileLoops(nodeObj)
 
 		elif type(nodeObj) is FuncCall:
-			handleFunctionCalls(nodeObj)
+			handleFunctionCalls([],nodeObj, 'call')
 	
 		elif type(nodeObj) is If:
 			handleIfElse(nodeObj)
