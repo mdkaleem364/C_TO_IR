@@ -1,7 +1,6 @@
-rcall fn $1 a b 
-loop $1 
-output d 
-output d 
+assign i j 
+loop i j 
+assign i j 
+output j 
 assign j j 
-rcall fn $1 a b 
 endFor

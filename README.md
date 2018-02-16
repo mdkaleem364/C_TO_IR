@@ -3,18 +3,17 @@
 TODO
 ===
 
-0. 1. if(++i){} (omkar)
+0. if(++i){} (omkar)
 
-17. elseif(++i) (omkar - where to put assign i i , under which block)
+1. elseif(++i) (omkar - where to put assign i i , under which block)
 
-1. ternary ops (omkar)
+2. ternary ops (omkar)
 
-1. while(scanf("%d",&x)){} => output? (omkar)
+3. while(scanf("%d",&x)){} => output? (omkar)
 
-1. int a=printf("%s\n", c); => output? (omkar)
+4. int a=printf("%s\n", c); => output? (omkar)
 
-2. sentinal for fn calls - kaleem "not required" bol raha hai
-
+5. sentinal for fn calls - kaleem "not required" bol raha hai
 
 6. check assignments stmts in binary ops:
 	for(   ;k<3 && (i=j);)
@@ -24,6 +23,8 @@ TODO
 	assign i j
 
 7. pointers – same as arrays (omkar - pointer example)
+
+8. procedures other than main
 
 8. for loop cond section contains functions ? (same as above)
 
@@ -86,3 +87,5 @@ multiple invars - two versions of code
 handle array decls.
 
 arrays - ‘a[i] = j’ => assign a i j
+
+handled fscanf and fprintf

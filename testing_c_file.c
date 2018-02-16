@@ -4,10 +4,7 @@
 int main()
 {
 
-	for(;fn(a,b) > 8;++j){
-		printf("%s\n", d);
-		printf("%s\n", d);
-	}
-
+	for (;(i =j) & (i>0); j--)
+		printf("%d",j);
 	return 0;
 }

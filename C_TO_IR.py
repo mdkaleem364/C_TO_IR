@@ -144,23 +144,19 @@ def handleForLoops(forLoopObj):
 	ind = 0
 	## init - optional
 	if forLoopObj.children()[ind][0] == 'init':	
-		dfs(forLoopObj.children()[0][1])
+		dfs(forLoopObj.children()[ind][1])
 		ind += 1
 
 	## cond - optional
 	condIds = []
 	# not handled - ( 1||a=b )
 	if forLoopObj.children()[ind][0] == 'cond':
-		# (can have assignment stmts)
-		if type(forLoopObj.children()[ind][1]) is BinaryOp:
-			# for fns inside cond stmts, if any
-			currCounter = helper.dollarCounter
-			currInd = ind
-			condIds = getIdsFromObject(forLoopObj.children()[ind][1])
-			pass
-
-		elif type(forLoopObj.children()[ind][1]) is ID:
-			condIds = [forLoopObj.children()[ind][1].getName()]
+		# (can have assignment stmts inside 'cond')
+		# for fns inside cond stmts, if any
+		dfs(forLoopObj.children()[ind][1])
+		currCounter = helper.dollarCounter
+		currInd = ind
+		condIds = getIdsFromObject(forLoopObj.children()[ind][1])
 
 		ind += 1
 
@@ -174,6 +170,9 @@ def handleForLoops(forLoopObj):
 	for id in condIds:
 		print(id, end=' ')
 	print()
+
+	#print condition stmts after 'loop' line
+	dfs(forLoopObj.children()[currInd][1])
 	
 	## stmt - Empty/Compound/(Single line)
 	dfs(forLoopObj.children()[ind][1])	
@@ -181,12 +180,13 @@ def handleForLoops(forLoopObj):
 	if nextInd != -1:
 		dfs(forLoopObj.children()[nextInd][1])		
 	
+
 	# for fns inside cond stmts, if any
 	helper.dollarCounter = currCounter
 	getIdsFromObject(forLoopObj.children()[currInd][1])
+
 	
 	print('endFor')
-	pass
 
 
 def handleDeclerations(declObj):

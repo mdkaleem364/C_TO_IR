@@ -12,6 +12,13 @@ def handleGenericList(l):
 	pass
 
 
+def handleFscanf(fnCallObj):
+	print('input', end=' ')
+	ids = getIdsFromObject(fnCallObj.children()[1][1])	
+	handleGenericList(ids)
+	print()
+
+
 def handlePrintf(printfObj):
 
 	# no vars is printed in printf
@@ -37,8 +44,7 @@ def handleScanf(scanfObj):
 			ids = getIdsFromObject(expr[1])
 			for id in ids:
 				print(id, end=' ')
-			print()
-	
+			print()	
 	pass
 
 # printf, scanf, anyother fn call
@@ -50,8 +56,11 @@ def handleFunctionCalls(leftNodes, fnCallObj, callType):
 	if fnCallObj.children()[0][1].getName() == 'scanf':
 		handleScanf(fnCallObj)
 
-	elif fnCallObj.children()[0][1].getName() == 'printf':
+	elif fnCallObj.children()[0][1].getName() in ['printf', 'fprintf']:
 		handlePrintf(fnCallObj)
+
+	elif fnCallObj.children()[0][1].getName() == 'fscanf':
+		handleFscanf(fnCallObj)
 
 	# for all other fns
 	else:
