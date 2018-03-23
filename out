@@ -1,6 +1,8 @@
-assign i j 
-loop i j 
-assign i j 
-output j 
-assign j j 
-endFor
+proc main 
+if i 
+output c 
+endIf
+elseassign i i 
+if i 
+input n 
+endIf

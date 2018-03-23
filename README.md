@@ -3,7 +3,7 @@
 TODO
 ===
 
-0. if(++i){} (omkar)
+0. switch (omkar)
 
 1. elseif(++i) (omkar - where to put assign i i , under which block)
 
@@ -38,15 +38,21 @@ TODO
 
 12. merge assign and multiassign fns
 
-13. structure
-
 14. sed - remove multiple occurance of vars not changed in assignment stmts
 
 15. int a[3], a[i];
 
-16. int i = { somefunction(a, b) };
+16. int i = somefunction(a, b);
 
 18. include handlePreUnary and PostUnary fns in for, while and assignment fns
+
+19. if(i>4){
+		printf("%s\n", c);
+	}
+	else if( ++i){
+		scanf("%d", &n);
+	} 
+	(omkar)
 
 n. make compatible with input names
 
@@ -89,3 +95,14 @@ handle array decls.
 arrays - ‘a[i] = j’ => assign a i j
 
 handled fscanf and fprintf
+
+handled multiple function declarations and definitions
+
+handled preincrement and post increment ops in "if condition stmts"
+handled preincrement and post increment ops in array and variable declarations
+
+handled function calls during assignment stmts
+
+structure
+
+

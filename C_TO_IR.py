@@ -91,13 +91,16 @@ def handleWhileLoops(nodeObj):
 def handleIfElse(nodeObj):
 
 	ids = getIdsFromObject(nodeObj.children()[0][1])
+	
+	# handle unary ops in if cond	
+	handlePreUnary(nodeObj.children()[0][1])
+	
 	print('if', end=' ')
 	for id in ids:
 		print(id,end=' ')
 	print()
 	
 	# handle unary ops in if cond
-	handlePreUnary(nodeObj.children()[0][1])
 	handlePostUnary(nodeObj.children()[0][1])
 
 	# recur on stmts inside 'if' block
@@ -149,6 +152,9 @@ def handleForLoops(forLoopObj):
 
 	## cond - optional
 	condIds = []
+	currInd = 0
+	currCounter = helper.dollarCounter
+
 	# not handled - ( 1||a=b )
 	if forLoopObj.children()[ind][0] == 'cond':
 		# (can have assignment stmts inside 'cond')
@@ -221,7 +227,7 @@ def handleDeclerations(declObj):
 
 		# int i={3*k}
 		elif type(declObj.children()[1][1]) is InitList:
-			ids = getIDsFromInitList(declObj.children())
+			ids = getIdsFromObject(declObj.children()[1][1])
 			print('assign', declObj.children()[0][1].getName(), end=' ')								
 			if ids:
 				for id in ids:
@@ -242,13 +248,13 @@ def handleDeclerations(declObj):
 		elif type(declObj.children()[1][1]) is InitList:
 			
 			# ids = getIdsFromObject(declObj.children()[0][1].children()[0][1])
+			ids1 = getIdsFromObject(declObj.children()[0][1])
+			ids2 = getIdsFromObject(declObj.children()[1][1])
 			print('assign', end=' ')			
-			ids = getIdsFromObject(declObj.children()[0][1])
-			for id in ids:
+			for id in ids1:
 				print(id ,end=' ')
 			
-			ids = getIdsFromObject(declObj.children()[1][1])
-			for id in ids:
+			for id in ids2:
 				print(id ,end=' ')
 			print()
 		pass
@@ -297,6 +303,29 @@ def handlePostUnary(obj):
 	pass
 
 
+def handleFunctionDefinition(nodeObj):
+	# print each function/procedure name before executing its statements
+	funcDeclObj = nodeObj.children()[0][1].children()[0][1].children()
+
+	print("proc ", end='')
+	# print fn name
+	if funcDeclObj[0][0] == 'type':
+		handleGenericList(getIdsFromObject(funcDeclObj[0][1]))
+		pass
+	else:
+		# second tuple could be of 'type'
+		handleGenericList(getIdsFromObject(funcDeclObj[1][1]))
+
+	# check if fn has arguments and print args
+	if funcDeclObj[0][0] == 'args':
+		handleGenericList(getIdsFromObject(funcDeclObj[0][1]))
+	print()
+
+	# recurse on body of function
+	for child in nodeObj:
+		dfs(child)
+
+
 ## MAIN FN
 
 def dfs(nodeObj):
@@ -308,6 +337,9 @@ def dfs(nodeObj):
 		
 		elif type(nodeObj) is While or type(nodeObj) is DoWhile:
 			handleWhileLoops(nodeObj)
+
+		elif type(nodeObj) is FuncDef:
+			handleFunctionDefinition(nodeObj)
 
 		elif type(nodeObj) is FuncCall:
 			handleFunctionCalls([],nodeObj, 'call')
@@ -326,6 +358,7 @@ def dfs(nodeObj):
 
 		else:
 			# are all other objs iterable ??
+			# handled recursively on children
 			for child in nodeObj:
 				dfs(child)
 

@@ -118,10 +118,17 @@ def getIdFromUnaryOp(unaryObj):
 
 def getIDsFromInitList(initListObj):
 	ids = []
+	# print(type(initListObj))
 	for obj in initListObj.children():
 		ids += getIdsFromObject(obj[1])
 		
 	return getDistinctIds(ids)
+
+def getIdsFromStruct(structObj):
+	
+	result = ''.join(getIdsFromObject(structObj.children()[0][1]))+'.'
+	result += ''.join(getIdsFromObject(structObj.children()[1][1]))
+	return [result]
 
 
 dollarCounter = 1	# global var
@@ -150,7 +157,7 @@ def getIdsFromObject(obj):
 		resultList = ids
 
 	# constant
-	elif type(obj) is Constant:
+	elif type(obj) in [Constant, str]:
 		resultList =  []
 
 	elif type(obj) is InitList:
@@ -161,6 +168,9 @@ def getIdsFromObject(obj):
 
 	elif type(obj) is FuncCall:
 		resultList = ['$'+str(handleFunctionCalls(['$'+str(dollarCounter)], obj, 'rcall'))]
+
+	elif type(obj) is StructRef:
+		resultList = getIdsFromStruct(obj)
 
 	else:
 		res = []
