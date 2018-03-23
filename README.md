@@ -2,6 +2,9 @@
 
 TODO
 ===
+0. remove pre and post incr in 'if'
+
+1. add space after else if there is no if.
 
 0. switch (omkar)
 
