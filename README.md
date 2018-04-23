@@ -109,3 +109,14 @@ handled function calls during assignment stmts
 structure
 
 
+multiple assignments in one statement.
+
+
+
+// not handled
+===
+int i = arr[++j];
+
+int a = b+=c;
+
+

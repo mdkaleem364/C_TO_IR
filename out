@@ -1,8 +1,3 @@
 proc main 
-if i 
-output c 
-endIf
-elseassign i i 
-if i 
-input n 
-endIf
+assign a c 
+assign b b c 
