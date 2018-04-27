@@ -2,7 +2,7 @@
 #cp userfile.c testing_c_file.c
 
 # remove #includes
-sed '/^\#.*include.*/d' ./testing_c_file.c > temp.c
+sed '/^\s*\#.*include.*/d' ./testing_c_file.c > temp.c
 
 # preprocess input c file
 cpp temp.c > temp1.c
